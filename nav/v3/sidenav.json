@@ -1,18 +1,18 @@
 [
   {
     "label": "Home (v3)",
-    "path": "/v3"
+    "path": "/"
   },
   {
     "label": "Guides (v3)",
     "children": [
       {
         "label": "What's new in v3",
-        "path": "/v3/guides/whats-new"
+        "path": "/guides/whats-new"
       },
       {
         "label": "Migrate from v2",
-        "path": "/v3/guides/migrate"
+        "path": "/guides/migrate"
       }
     ]
   },
@@ -24,11 +24,11 @@
         "children": [
           {
             "label": "Router (v3)",
-            "path": "/v3/deep/internals/router"
+            "path": "/deep/internals/router"
           },
           {
             "label": "Rendering (v3)",
-            "path": "/v3/deep/internals/rendering"
+            "path": "/deep/internals/rendering"
           }
         ]
       }

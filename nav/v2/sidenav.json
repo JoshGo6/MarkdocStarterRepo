@@ -1,18 +1,18 @@
 [
   {
     "label": "Overview (v2)",
-    "path": "/v2"
+    "path": "/"
   },
   {
     "label": "Quickstarts (v2)",
     "children": [
       {
         "label": "Hello v2",
-        "path": "/v2/quickstart/hello-v2"
+        "path": "/quickstart/hello-v2"
       },
       {
         "label": "Install v2",
-        "path": "/v2/quickstart/install"
+        "path": "/quickstart/install"
       }
     ]
   },
@@ -21,11 +21,11 @@
     "children": [
       {
         "label": "API changes",
-        "path": "/v2/reference/api-changes"
+        "path": "/reference/api-changes"
       },
       {
         "label": "New component: Widget",
-        "path": "/v2/reference/components/widget"
+        "path": "/reference/components/widget"
       }
     ]
   }

@@ -1,7 +1,7 @@
 [
   {
     "label": "Overview",
-    "path": "/docs"
+    "path": "/"
   },
   {
     "label": "Guides",
@@ -11,15 +11,15 @@
         "children": [
           {
             "label": "Getting started",
-            "path": "/docs/guides/introduction/getting-started"
+            "path": "/guides/introduction/getting-started"
           },
           {
             "label": "Installation",
-            "path": "/docs/guides/introduction/installation"
+            "path": "/guides/introduction/installation"
           },
           {
             "label": "Maintenance",
-            "path": "/docs/guides/introduction/maintenance"
+            "path": "/guides/introduction/maintenance"
           }
         ]
       },
@@ -28,11 +28,11 @@
         "children": [
           {
             "label": "Pages and routes",
-            "path": "/docs/guides/basics/pages-and-routes"
+            "path": "/guides/basics/pages-and-routes"
           },
           {
             "label": "Frontmatter",
-            "path": "/docs/guides/basics/frontmatter"
+            "path": "/guides/basics/frontmatter"
           }
         ]
       }
@@ -46,11 +46,11 @@
         "children": [
           {
             "label": "Callout component",
-            "path": "/docs/reference/components/callout"
+            "path": "/reference/components/callout"
           },
           {
             "label": "CodeBlock component",
-            "path": "/docs/reference/components/codeblock"
+            "path": "/reference/components/codeblock"
           }
         ]
       },
@@ -59,7 +59,7 @@
         "children": [
           {
             "label": "Callout tag",
-            "path": "/docs/reference/tags/callout"
+            "path": "/reference/tags/callout"
           }
         ]
       }
@@ -82,7 +82,7 @@
                     "children": [
                       {
                         "label": "At the bottom",
-                        "path": "/docs/deep/level-1/level-2/level-3/level-4/at-the-bottom"
+                        "path": "/deep/level-1/level-2/level-3/level-4/at-the-bottom"
                       }
                     ]
                   }
