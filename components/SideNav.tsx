@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import nav from '../nav/sidenav.json';
+import versionsConfig from '../nav/versions.json';
 
 type NavItem = {
   label: string;
@@ -9,12 +9,16 @@ type NavItem = {
   children?: NavItem[];
 };
 
-function flattenPaths(items: NavItem[], base: string[] = [], acc: string[] = []): string[] {
-  for (const it of items) {
-    if (it.path) acc.push(it.path);
-    if (it.children) flattenPaths(it.children, base, acc);
-  }
-  return acc;
+type Version = { key: string; label?: string; docsRoot: string; sidenav: string };
+type VersionsConfig = { default: string; versions: Version[] };
+
+function pickActiveVersion(pathname: string, cfg: VersionsConfig): Version {
+  const list = cfg.versions;
+  const p = (pathname || '').split(/[?#]/)[0];
+  const match = list
+    .filter(v => p === v.docsRoot || p.startsWith(v.docsRoot + '/'))
+    .sort((a, b) => b.docsRoot.length - a.docsRoot.length)[0];
+  return match || list.find(v => v.key === cfg.default) || list[0];
 }
 
 function isAncestorOfActive(item: NavItem, activePath: string): boolean {
@@ -23,8 +27,6 @@ function isAncestorOfActive(item: NavItem, activePath: string): boolean {
 }
 
 function NavList({ items, activePath }: { items: NavItem[]; activePath: string }) {
-  const router = useRouter();
-
   return (
     <ul className="tree">
       {items.map((item, idx) => {
@@ -33,45 +35,33 @@ function NavList({ items, activePath }: { items: NavItem[]; activePath: string }
         return (
           <li key={idx} className={isActive ? 'active' : expanded ? 'expanded' : undefined}>
             {item.path ? (
-              <Link href={item.path} className="node link">
-                {item.label}
-              </Link>
+              <Link href={item.path}>{item.label}</Link>
             ) : (
-              <span className="node">{item.label}</span>
+              <span className="nolink">{item.label}</span>
             )}
-            {item.children && item.children.length > 0 ? (
-              <div className="children">
-                <NavList items={item.children} activePath={activePath} />
-              </div>
+            {item.children && item.children.length ? (
+              <NavList items={item.children} activePath={activePath} />
             ) : null}
           </li>
         );
       })}
       <style jsx>{`
-        .tree {
+        ul.tree {
           list-style: none;
-          padding-left: 0;
           margin: 0;
+          padding-left: 0.5rem;
         }
-        .tree :global(a) {
-          text-decoration: none;
+        .nolink {
+          opacity: 0.8;
         }
-        li {
-          margin: 0.15rem 0;
+        li.active > :global(a) {
+          font-weight: 600;
         }
-        .node {
-          display: inline-block;
-          padding: 0.15rem 0.25rem;
-          border-radius: 4px;
+        li.expanded > .nolink {
+          font-weight: 600;
         }
-        li.active > .node,
-        li :global(a:hover) {
-          text-decoration: underline;
-        }
-        .children {
-          padding-left: 1rem;
-          border-left: 1px dashed rgba(0,0,0,0.1);
-          margin-left: 0.25rem;
+        li > ul {
+          margin-left: 1rem;
         }
       `}</style>
     </ul>
@@ -80,12 +70,31 @@ function NavList({ items, activePath }: { items: NavItem[]; activePath: string }
 
 export function SideNav() {
   const router = useRouter();
-  // router.asPath may include hash; strip it
-  const activePath = useMemo(() => (router.asPath || '').split('#')[0], [router.asPath]);
+  const cfg = versionsConfig as VersionsConfig;
+  const [items, setItems] = useState<NavItem[] | null>(null);
+
+  const activeVersion = useMemo(() => pickActiveVersion(router.asPath, cfg), [router.asPath]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(`/api/nav/${activeVersion.key}`);
+        if (!res.ok) throw new Error('Failed to load nav');
+        const data = await res.json();
+        setItems(data as NavItem[]);
+      } catch (e) {
+        console.error(e);
+        setItems([]);
+      }
+    }
+    load();
+  }, [activeVersion.key]);
+
+  const activePath = (router.asPath || '').split(/[?#]/)[0];
 
   return (
     <nav className="sidenav">
-      <NavList items={nav as NavItem[]} activePath={activePath} />
+      {items ? <NavList items={items} activePath={activePath} /> : null}
       <style jsx>{`
         .sidenav {
           height: calc(100vh - var(--top-nav-height));

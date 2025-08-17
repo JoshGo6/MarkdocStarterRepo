@@ -1,0 +1,23 @@
+{
+  "default": "v1",
+  "versions": [
+    {
+      "key": "v1",
+      "label": "Version 1",
+      "docsRoot": "/docs",
+      "sidenav": "nav/v1/sidenav.json"
+    },
+    {
+      "key": "v2",
+      "label": "Version 2",
+      "docsRoot": "/v2",
+      "sidenav": "nav/v2/sidenav.json"
+    },
+    {
+      "key": "v3",
+      "label": "Version 3",
+      "docsRoot": "/v3",
+      "sidenav": "nav/v3/sidenav.json"
+    }
+  ]
+}
