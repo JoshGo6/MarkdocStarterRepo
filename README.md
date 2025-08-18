@@ -5,6 +5,8 @@ This is a full-featured boilerplate for a creating a documentation website using
 - Doc version selector to select the appropriate version of the documentation.
 - Left navigation. Each version of your documentation has its own left navigation and its own documentation set.
 
+![Demo images](./demo.png)
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) in your CLI environment.
