@@ -72,6 +72,18 @@
           "sidenav": "nav/v3.2/sidenav.json"
         }
       ]
+    },
+    {
+      "key": "v4",
+      "label": "v4 - Latest",
+      "minorVersions": [
+        {
+          "key": "v4.0",
+          "label": "4.0",
+          "docsRoot": "/v4.0",
+          "sidenav": "nav/4.0/sidenav.json"
+        }
+      ]
     }
   ]
 }

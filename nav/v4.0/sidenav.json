@@ -1,0 +1,19 @@
+[
+  {
+    "label": "The latest",
+    "path": "/"
+  },
+  {
+    "label": "What's new",
+    "children": [
+      {
+        "label": "Version 4 Release NOtes",
+        "path": "/new/what-is-new"
+      },
+      {
+        "label": "Another topic",
+        "path": "/new/metaverse"
+      }
+    ]
+  }
+]
