@@ -79,12 +79,20 @@ export function VersionSelector() {
   const currentMajor = cfg.majorVersions.find(m => m.key === selectedMajor) || cfg.majorVersions[0];
   const minorVersions = currentMajor.minorVersions;
 
-  const onMajorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onMajorChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMajorKey = e.target.value;
     const newMajor = cfg.majorVersions.find(m => m.key === newMajorKey);
     if (newMajor && newMajor.minorVersions.length > 0) {
       setSelectedMajor(newMajorKey);
-      setSelectedMinor(newMajor.minorVersions[0].key);
+      const firstMinor = newMajor.minorVersions[0];
+      setSelectedMinor(firstMinor.key);
+      
+      // Navigate to the first minor version of the new major version
+      const currentPath = (router.asPath || '').split(/[?#]/)[0];
+      const candidate = switchPath(currentPath, activeMinor.docsRoot, firstMinor.docsRoot);
+      const paths = await fetchNavPaths(firstMinor.key);
+      const target = paths.has(candidate) ? candidate : firstMinor.docsRoot;
+      router.push(target);
     }
   };
 

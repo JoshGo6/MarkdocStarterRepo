@@ -81,7 +81,7 @@
           "key": "v4.0",
           "label": "4.0",
           "docsRoot": "/v4.0",
-          "sidenav": "nav/4.0/sidenav.json"
+          "sidenav": "nav/v4.0/sidenav.json"
         }
       ]
     }
