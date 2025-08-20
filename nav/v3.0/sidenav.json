@@ -1,0 +1,32 @@
+[
+  {
+    "label": "Home v3.0 Preview",
+    "path": "/"
+  },
+  {
+    "label": "Preview Features",
+    "children": [
+      {
+        "label": "AI Integration",
+        "path": "/preview/ai-integration"
+      },
+      {
+        "label": "Real-time Sync",
+        "path": "/preview/realtime"
+      }
+    ]
+  },
+  {
+    "label": "Guides v3.0",
+    "children": [
+      {
+        "label": "What's new in v3",
+        "path": "/guides/whats-new"
+      },
+      {
+        "label": "Migrate from v2",
+        "path": "/guides/migrate"
+      }
+    ]
+  }
+]

@@ -9,16 +9,28 @@ type NavItem = {
   children?: NavItem[];
 };
 
-type Version = { key: string; label?: string; docsRoot: string; sidenav: string };
-type VersionsConfig = { default: string; versions: Version[] };
+type MinorVersion = { key: string; label?: string; docsRoot: string; sidenav: string };
+type MajorVersion = { key: string; label?: string; minorVersions: MinorVersion[] };
+type VersionsConfig = { default: string; majorVersions: MajorVersion[] };
 
-function pickActiveVersion(pathname: string, cfg: VersionsConfig): Version {
-  const list = cfg.versions;
+function findActiveVersion(pathname: string, cfg: VersionsConfig): MinorVersion {
   const p = (pathname || '').split(/[?#]/)[0];
-  const match = list
-    .filter(v => p === v.docsRoot || p.startsWith(v.docsRoot + '/'))
-    .sort((a, b) => b.docsRoot.length - a.docsRoot.length)[0];
-  return match || list.find(v => v.key === cfg.default) || list[0];
+  
+  for (const major of cfg.majorVersions) {
+    for (const minor of major.minorVersions) {
+      if (p === minor.docsRoot || p.startsWith(minor.docsRoot + '/')) {
+        return minor;
+      }
+    }
+  }
+  
+  // Return default
+  for (const major of cfg.majorVersions) {
+    const defaultVersion = major.minorVersions.find(v => v.key === cfg.default);
+    if (defaultVersion) return defaultVersion;
+  }
+  
+  return cfg.majorVersions[0].minorVersions[0];
 }
 
 function isAncestorOfActive(item: NavItem, activePath: string): boolean {
@@ -73,7 +85,7 @@ export function SideNav() {
   const cfg = versionsConfig as VersionsConfig;
   const [items, setItems] = useState<NavItem[] | null>(null);
 
-  const activeVersion = useMemo(() => pickActiveVersion(router.asPath, cfg), [router.asPath]);
+  const activeVersion = useMemo(() => findActiveVersion(router.asPath, cfg), [router.asPath]);
 
   useEffect(() => {
     async function load() {

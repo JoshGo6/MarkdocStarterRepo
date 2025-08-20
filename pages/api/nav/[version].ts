@@ -4,36 +4,27 @@ import path from 'path';
 import versionsConfig from '../../../nav/versions.json';
 
 type NavItem = { label: string; path?: string; children?: NavItem[] };
-type Version = { key: string; label?: string; docsRoot: string; sidenav: string };
-type VersionsConfig = { default: string; versions: Version[] };
+type MinorVersion = { key: string; label?: string; docsRoot: string; sidenav: string };
+type MajorVersion = { key: string; label?: string; minorVersions: MinorVersion[] };
+type VersionsConfig = { default: string; majorVersions: MajorVersion[] };
 
 function ensureLeadingSlash(p: string): string {
   return p.startsWith('/') ? p : '/' + p;
 }
 
 function normalizeNav(items: NavItem[], docsRoot: string): NavItem[] {
-  const root = ensureLeadingSlash(docsRoot).replace(/\/$/, ''); // normalize, no trailing slash
+  const root = ensureLeadingSlash(docsRoot).replace(/\/$/, '');
 
   const toAbsolute = (maybeRel?: string): string | undefined => {
     if (maybeRel == null) return undefined;
     let s = ('' + maybeRel).trim();
 
-    // Root shortcuts
-    if (s === '' || s === '.') return root; // version root
-
-    // External absolute URLs (http, https, etc.)
+    if (s === '' || s === '.') return root;
     if (/^[a-z]+:\/\//i.test(s)) return s;
-
-    // Force site-absolute (outside docsRoot): use double-slash prefix in JSON
-    if (s.startsWith('//')) return s.slice(1); // '/something' at site root
-
-    // Already absolute within docsRoot
+    if (s.startsWith('//')) return s.slice(1);
     if (s === root || s.startsWith(root + '/')) return s;
-
-    // Single leading slash without docsRoot — treat as relative to docsRoot
     if (s.startsWith('/')) s = s.replace(/^\/+/, '');
 
-    // Join relative path to docsRoot
     return s ? `${root}/${s}` : root;
   };
 
@@ -47,13 +38,25 @@ function normalizeNav(items: NavItem[], docsRoot: string): NavItem[] {
   return walk(items);
 }
 
+function findVersion(key: string, cfg: VersionsConfig): MinorVersion | undefined {
+  for (const major of cfg.majorVersions) {
+    const minor = major.minorVersions.find(v => v.key === key);
+    if (minor) return minor;
+  }
+  
+  // Try to find default
+  for (const major of cfg.majorVersions) {
+    const defaultVersion = major.minorVersions.find(v => v.key === cfg.default);
+    if (defaultVersion) return defaultVersion;
+  }
+  
+  return cfg.majorVersions[0]?.minorVersions[0];
+}
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { version } = req.query as { version?: string };
   const cfg = versionsConfig as VersionsConfig;
-  const v =
-    cfg.versions.find((x) => x.key === version) ||
-    cfg.versions.find((x) => x.key === cfg.default) ||
-    cfg.versions[0];
+  const v = findVersion(version || '', cfg);
 
   if (!v) {
     res.status(404).json({ error: 'No versions configured' });

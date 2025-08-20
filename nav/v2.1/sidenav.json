@@ -1,0 +1,53 @@
+[
+  {
+    "label": "Overview v2.1 Stable",
+    "path": "/"
+  },
+  {
+    "label": "Quickstarts v2.1",
+    "children": [
+      {
+        "label": "Hello v2.1",
+        "path": "/quickstart/hello-v2"
+      },
+      {
+        "label": "Install v2.1",
+        "path": "/quickstart/install"
+      },
+      {
+        "label": "First App",
+        "path": "/quickstart/first-app"
+      }
+    ]
+  },
+  {
+    "label": "Components v2.1",
+    "children": [
+      {
+        "label": "Widget component",
+        "path": "/reference/components/widget"
+      },
+      {
+        "label": "Modal component",
+        "path": "/reference/components/modal"
+      },
+      {
+        "label": "Toast component",
+        "path": "/reference/components/toast"
+      }
+    ]
+  },
+  {
+    "label": "Security v2.1",
+    "children": [
+      {
+        "label": "Authentication",
+        "path": "/security/authentication"
+      },
+      {
+        "label": "Authorization",
+        "path": "/security/authorization"
+      }
+    ]
+  }
+]

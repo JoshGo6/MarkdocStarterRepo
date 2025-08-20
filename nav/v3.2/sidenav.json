@@ -1,0 +1,53 @@
+[
+  {
+    "label": "Home v3.2 Dev",
+    "path": "/"
+  },
+  {
+    "label": "Development Tools",
+    "children": [
+      {
+        "label": "Debug Console",
+        "path": "/dev/debug-console"
+      },
+      {
+        "label": "Performance Profiler",
+        "path": "/dev/profiler"
+      },
+      {
+        "label": "Memory Analyzer",
+        "path": "/dev/memory"
+      }
+    ]
+  },
+  {
+    "label": "Bleeding Edge",
+    "children": [
+      {
+        "label": "Metaverse Integration",
+        "path": "/bleeding/metaverse"
+      },
+      {
+        "label": "Blockchain Support",
+        "path": "/bleeding/blockchain"
+      },
+      {
+        "label": "Quantum Encryption",
+        "path": "/bleeding/quantum-crypto"
+      }
+    ]
+  },
+  {
+    "label": "Labs v3.2",
+    "children": [
+      {
+        "label": "Research Projects",
+        "path": "/labs/research"
+      },
+      {
+        "label": "Community Experiments",
+        "path": "/labs/community"
+      }
+    ]
+  }
+]

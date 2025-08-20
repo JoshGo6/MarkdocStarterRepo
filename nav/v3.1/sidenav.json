@@ -1,0 +1,54 @@
+[
+  {
+    "label": "Home v3.1 Alpha",
+    "path": "/"
+  },
+  {
+    "label": "Alpha Features",
+    "children": [
+      {
+        "label": "GraphQL API",
+        "path": "/alpha/graphql"
+      },
+      {
+        "label": "WebAssembly Support",
+        "path": "/alpha/wasm"
+      },
+      {
+        "label": "Edge Functions",
+        "path": "/alpha/edge-functions"
+      }
+    ]
+  },
+  {
+    "label": "Experimental v3.1",
+    "children": [
+      {
+        "label": "Quantum Computing",
+        "path": "/experimental/quantum"
+      },
+      {
+        "label": "Neural Networks",
+        "path": "/experimental/neural"
+      }
+    ]
+  },
+  {
+    "label": "Deep Dive v3.1",
+    "children": [
+      {
+        "label": "Internals",
+        "children": [
+          {
+            "label": "Router v3.1",
+            "path": "/deep/internals/router"
+          },
+          {
+            "label": "Rendering v3.1",
+            "path": "/deep/internals/rendering"
+          }
+        ]
+      }
+    ]
+  }
+]

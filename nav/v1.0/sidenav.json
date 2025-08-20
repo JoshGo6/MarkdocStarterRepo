@@ -1,0 +1,59 @@
+[
+  {
+    "label": "Overview v1.0",
+    "path": "/"
+  },
+  {
+    "label": "Guides v1.0",
+    "children": [
+      {
+        "label": "Introduction",
+        "children": [
+          {
+            "label": "Getting started",
+            "path": "/guides/introduction/getting-started"
+          },
+          {
+            "label": "Installation",
+            "path": "/guides/introduction/installation"
+          },
+          {
+            "label": "Maintenance",
+            "path": "/guides/introduction/maintenance"
+          }
+        ]
+      },
+      {
+        "label": "Basics",
+        "children": [
+          {
+            "label": "Pages and routes",
+            "path": "/guides/basics/pages-and-routes"
+          },
+          {
+            "label": "Frontmatter",
+            "path": "/guides/basics/frontmatter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Reference v1.0",
+    "children": [
+      {
+        "label": "Components",
+        "children": [
+          {
+            "label": "Callout component",
+            "path": "/reference/components/callout"
+          },
+          {
+            "label": "CodeBlock component",
+            "path": "/reference/components/codeblock"
+          }
+        ]
+      }
+    ]
+  }
+]

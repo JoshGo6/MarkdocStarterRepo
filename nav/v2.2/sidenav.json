@@ -1,0 +1,49 @@
+[
+  {
+    "label": "Overview v2.2 Latest",
+    "path": "/"
+  },
+  {
+    "label": "What's New",
+    "children": [
+      {
+        "label": "v2.2 Features",
+        "path": "/new/features-2-2"
+      },
+      {
+        "label": "Breaking Changes",
+        "path": "/new/breaking-changes"
+      }
+    ]
+  },
+  {
+    "label": "Advanced v2.2",
+    "children": [
+      {
+        "label": "Custom Hooks",
+        "path": "/advanced/hooks"
+      },
+      {
+        "label": "State Management",
+        "path": "/advanced/state"
+      },
+      {
+        "label": "Server Components",
+        "path": "/advanced/server-components"
+      }
+    ]
+  },
+  {
+    "label": "Deployment v2.2",
+    "children": [
+      {
+        "label": "Docker Setup",
+        "path": "/deployment/docker"
+      },
+      {
+        "label": "Kubernetes",
+        "path": "/deployment/kubernetes"
+      }
+    ]
+  }
+]

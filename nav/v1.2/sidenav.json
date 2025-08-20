@@ -1,0 +1,45 @@
+[
+  {
+    "label": "Overview v1.2 Beta",
+    "path": "/"
+  },
+  {
+    "label": "Beta Features",
+    "children": [
+      {
+        "label": "Experimental API",
+        "path": "/beta/experimental-api"
+      },
+      {
+        "label": "New Architecture",
+        "path": "/beta/architecture"
+      }
+    ]
+  },
+  {
+    "label": "Guides v1.2",
+    "children": [
+      {
+        "label": "Migration to 1.2",
+        "path": "/guides/migration-1-2"
+      },
+      {
+        "label": "Getting started",
+        "path": "/guides/introduction/getting-started"
+      }
+    ]
+  },
+  {
+    "label": "Testing v1.2",
+    "children": [
+      {
+        "label": "Unit Testing",
+        "path": "/testing/unit"
+      },
+      {
+        "label": "Integration Testing",
+        "path": "/testing/integration"
+      }
+    ]
+  }
+]

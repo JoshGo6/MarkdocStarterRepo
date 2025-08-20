@@ -1,0 +1,32 @@
+[
+  {
+    "label": "Overview v2.0 Legacy",
+    "path": "/"
+  },
+  {
+    "label": "Quickstarts v2.0",
+    "children": [
+      {
+        "label": "Hello v2",
+        "path": "/quickstart/hello-v2"
+      },
+      {
+        "label": "Install v2",
+        "path": "/quickstart/install"
+      }
+    ]
+  },
+  {
+    "label": "Legacy Docs",
+    "children": [
+      {
+        "label": "Deprecated Features",
+        "path": "/legacy/deprecated"
+      },
+      {
+        "label": "Migration Guide",
+        "path": "/legacy/migration"
+      }
+    ]
+  }
+]

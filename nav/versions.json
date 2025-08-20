@@ -1,23 +1,77 @@
 {
-  "default": "v1",
-  "versions": [
+  "default": "v1.0",
+  "majorVersions": [
     {
       "key": "v1",
-      "label": "Version 1",
-      "docsRoot": "/v1",
-      "sidenav": "nav/v1/sidenav.json"
+      "label": "Version 1.x",
+      "minorVersions": [
+        {
+          "key": "v1.0",
+          "label": "1.0 (Stable)",
+          "docsRoot": "/v1.0",
+          "sidenav": "nav/v1.0/sidenav.json"
+        },
+        {
+          "key": "v1.1",
+          "label": "1.1 (Current)",
+          "docsRoot": "/v1.1",
+          "sidenav": "nav/v1.1/sidenav.json"
+        },
+        {
+          "key": "v1.2",
+          "label": "1.2 (Beta)",
+          "docsRoot": "/v1.2",
+          "sidenav": "nav/v1.2/sidenav.json"
+        }
+      ]
     },
     {
       "key": "v2",
-      "label": "Version 2",
-      "docsRoot": "/v2",
-      "sidenav": "nav/v2/sidenav.json"
+      "label": "Version 2.x",
+      "minorVersions": [
+        {
+          "key": "v2.0",
+          "label": "2.0 (Legacy)",
+          "docsRoot": "/v2.0",
+          "sidenav": "nav/v2.0/sidenav.json"
+        },
+        {
+          "key": "v2.1",
+          "label": "2.1 (Stable)",
+          "docsRoot": "/v2.1",
+          "sidenav": "nav/v2.1/sidenav.json"
+        },
+        {
+          "key": "v2.2",
+          "label": "2.2 (Latest)",
+          "docsRoot": "/v2.2",
+          "sidenav": "nav/v2.2/sidenav.json"
+        }
+      ]
     },
     {
       "key": "v3",
-      "label": "Version 3",
-      "docsRoot": "/v3",
-      "sidenav": "nav/v3/sidenav.json"
+      "label": "Version 3.x",
+      "minorVersions": [
+        {
+          "key": "v3.0",
+          "label": "3.0 (Preview)",
+          "docsRoot": "/v3.0",
+          "sidenav": "nav/v3.0/sidenav.json"
+        },
+        {
+          "key": "v3.1",
+          "label": "3.1 (Alpha)",
+          "docsRoot": "/v3.1",
+          "sidenav": "nav/v3.1/sidenav.json"
+        },
+        {
+          "key": "v3.2",
+          "label": "3.2 (Dev)",
+          "docsRoot": "/v3.2",
+          "sidenav": "nav/v3.2/sidenav.json"
+        }
+      ]
     }
   ]
 }

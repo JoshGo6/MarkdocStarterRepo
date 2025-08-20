@@ -1,1 +1,1 @@
-v1/guides/introduction/getting-started.md
+v1.0/index.md

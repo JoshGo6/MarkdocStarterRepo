@@ -1,5 +1,4 @@
 import Prism from 'prismjs';
-
 import * as React from 'react';
 
 export function CodeBlock({children, 'data-language': language}) {

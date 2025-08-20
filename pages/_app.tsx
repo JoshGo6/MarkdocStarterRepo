@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { SideNav, TableOfContents, TopNav } from '../components';
 
 import 'prismjs';
-// Import other Prism themes here
 import 'prismjs/components/prism-bash.min';
 import 'prismjs/themes/prism.css';
 
