@@ -33,27 +33,56 @@ function findActiveVersion(pathname: string, cfg: VersionsConfig): MinorVersion 
   return cfg.majorVersions[0].minorVersions[0];
 }
 
-function isAncestorOfActive(item: NavItem, activePath: string): boolean {
-  if (!item.children) return false;
-  return item.children.some(child => child.path === activePath || isAncestorOfActive(child, activePath));
+function getItemKey(item: NavItem, index: number): string {
+  return `${item.label}-${index}`;
 }
 
-function NavList({ items, activePath }: { items: NavItem[]; activePath: string }) {
+function NavList({ 
+  items, 
+  activePath, 
+  expandedItems, 
+  onToggleExpand 
+}: { 
+  items: NavItem[]; 
+  activePath: string;
+  expandedItems: Set<string>;
+  onToggleExpand: (key: string) => void;
+}) {
   return (
     <ul className="tree">
       {items.map((item, idx) => {
         const isActive = item.path === activePath;
-        const expanded = isAncestorOfActive(item, activePath);
+        const itemKey = getItemKey(item, idx);
+        const isExpanded = expandedItems.has(itemKey);
+        const hasChildren = item.children && item.children.length > 0;
+        
         return (
-          <li key={idx} className={isActive ? 'active' : expanded ? 'expanded' : undefined}>
-            {item.path ? (
-              <Link href={item.path}>{item.label}</Link>
-            ) : (
-              <span className="nolink">{item.label}</span>
+          <li key={idx} className={isActive ? 'active' : isExpanded ? 'expanded' : undefined}>
+            <div className="nav-item">
+              {item.path ? (
+                <Link href={item.path} className="nav-link">{item.label}</Link>
+              ) : (
+                <span 
+                  className={hasChildren ? "nolink expandable" : "nolink"}
+                  onClick={hasChildren ? () => onToggleExpand(itemKey) : undefined}
+                >
+                  {item.label}
+                  {hasChildren && (
+                    <span className="expand-icon">
+                      {isExpanded ? '−' : '+'}
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            {hasChildren && isExpanded && (
+              <NavList 
+                items={item.children!} 
+                activePath={activePath}
+                expandedItems={expandedItems}
+                onToggleExpand={onToggleExpand}
+              />
             )}
-            {item.children && item.children.length ? (
-              <NavList items={item.children} activePath={activePath} />
-            ) : null}
           </li>
         );
       })}
@@ -63,13 +92,47 @@ function NavList({ items, activePath }: { items: NavItem[]; activePath: string }
           margin: 0;
           padding-left: 0.5rem;
         }
+        .nav-item {
+          display: flex;
+          align-items: center;
+        }
         .nolink {
           opacity: 0.8;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
-        li.active > :global(a) {
+        .nolink.expandable {
+          cursor: pointer;
+          user-select: none;
+        }
+        .nolink.expandable:hover {
+          opacity: 1;
+          background-color: rgba(0, 0, 0, 0.05);
+          border-radius: 3px;
+          padding: 2px 4px;
+          margin: -2px -4px;
+        }
+        .expand-icon {
+          font-family: monospace;
+          font-weight: bold;
+          margin-left: 8px;
+          font-size: 14px;
+          width: 16px;
+          text-align: center;
+        }
+        .nav-link {
+          text-decoration: none;
+          color: inherit;
+        }
+        .nav-link:hover {
+          opacity: 0.7;
+        }
+        li.active > .nav-item > :global(.nav-link) {
           font-weight: 600;
         }
-        li.expanded > .nolink {
+        li.expanded > .nav-item > .nolink {
           font-weight: 600;
         }
         li > ul {
@@ -84,6 +147,7 @@ export function SideNav() {
   const router = useRouter();
   const cfg = versionsConfig as VersionsConfig;
   const [items, setItems] = useState<NavItem[] | null>(null);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const activeVersion = useMemo(() => findActiveVersion(router.asPath, cfg), [router.asPath]);
 
@@ -94,6 +158,8 @@ export function SideNav() {
         if (!res.ok) throw new Error('Failed to load nav');
         const data = await res.json();
         setItems(data as NavItem[]);
+        // Reset expanded items when loading new navigation
+        setExpandedItems(new Set());
       } catch (e) {
         console.error(e);
         setItems([]);
@@ -102,11 +168,30 @@ export function SideNav() {
     load();
   }, [activeVersion.key]);
 
+  const handleToggleExpand = (key: string) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+      } else {
+        newSet.add(key);
+      }
+      return newSet;
+    });
+  };
+
   const activePath = (router.asPath || '').split(/[?#]/)[0];
 
   return (
     <nav className="sidenav">
-      {items ? <NavList items={items} activePath={activePath} /> : null}
+      {items ? (
+        <NavList 
+          items={items} 
+          activePath={activePath}
+          expandedItems={expandedItems}
+          onToggleExpand={handleToggleExpand}
+        />
+      ) : null}
       <style jsx>{`
         .sidenav {
           height: calc(100vh - var(--top-nav-height));
