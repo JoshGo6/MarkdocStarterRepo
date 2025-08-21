@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import versionsConfig from '../nav/versions.json';
 
@@ -68,100 +68,263 @@ export function VersionSelector() {
   const activeMinor = useMemo(() => findActiveVersion(router.asPath, cfg), [router.asPath]);
   const activeMajor = useMemo(() => findMajorVersion(activeMinor, cfg), [activeMinor]);
   
-  const [selectedMajor, setSelectedMajor] = useState(activeMajor?.key || cfg.majorVersions[0].key);
-  const [selectedMinor, setSelectedMinor] = useState(activeMinor.key);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hoveredMajor, setHoveredMajor] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (activeMajor) setSelectedMajor(activeMajor.key);
-    setSelectedMinor(activeMinor.key);
-  }, [activeMajor, activeMinor]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setHoveredMajor(null);
+      }
+    };
 
-  const currentMajor = cfg.majorVersions.find(m => m.key === selectedMajor) || cfg.majorVersions[0];
-  const minorVersions = currentMajor.minorVersions;
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const onMajorChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newMajorKey = e.target.value;
-    const newMajor = cfg.majorVersions.find(m => m.key === newMajorKey);
-    if (newMajor && newMajor.minorVersions.length > 0) {
-      setSelectedMajor(newMajorKey);
-      const firstMinor = newMajor.minorVersions[0];
-      setSelectedMinor(firstMinor.key);
-      
-      // Navigate to the first minor version of the new major version
-      const currentPath = (router.asPath || '').split(/[?#]/)[0];
-      const candidate = switchPath(currentPath, activeMinor.docsRoot, firstMinor.docsRoot);
-      const paths = await fetchNavPaths(firstMinor.key);
-      const target = paths.has(candidate) ? candidate : firstMinor.docsRoot;
-      router.push(target);
-    }
-  };
-
-  const onMinorChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newMinorKey = e.target.value;
-    const newMinor = minorVersions.find(v => v.key === newMinorKey);
-    if (!newMinor) return;
-    
-    setSelectedMinor(newMinorKey);
-    
+  const handleMinorClick = async (minor: MinorVersion) => {
     const currentPath = (router.asPath || '').split(/[?#]/)[0];
-    const candidate = switchPath(currentPath, activeMinor.docsRoot, newMinor.docsRoot);
-    const paths = await fetchNavPaths(newMinor.key);
-    const target = paths.has(candidate) ? candidate : newMinor.docsRoot;
+    const candidate = switchPath(currentPath, activeMinor.docsRoot, minor.docsRoot);
+    const paths = await fetchNavPaths(minor.key);
+    const target = paths.has(candidate) ? candidate : minor.docsRoot;
     router.push(target);
+    setIsOpen(false);
+    setHoveredMajor(null);
   };
+
+  const currentVersionLabel = activeMinor.label || activeMinor.key;
 
   return (
-    <div className="version-selector">
-      <label>
-        <span>Version</span>
-        <div className="selector-group">
-          <select value={selectedMajor} onChange={onMajorChange} className="major-select">
-            {cfg.majorVersions.map(major => (
-              <option key={major.key} value={major.key}>
-                {major.label || major.key}
-              </option>
-            ))}
-          </select>
-          <select value={selectedMinor} onChange={onMinorChange} className="minor-select">
-            {minorVersions.map(minor => (
-              <option key={minor.key} value={minor.key}>
-                {minor.label || minor.key}
-              </option>
-            ))}
-          </select>
+    <div className="version-selector" ref={dropdownRef}>
+      <button
+        className="version-button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Select version"
+        aria-expanded={isOpen}
+      >
+        <span>{currentVersionLabel}</span>
+        <svg
+          className={`chevron ${isOpen ? 'open' : ''}`}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 4.5L6 7.5L9 4.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="dropdown-menu">
+          {cfg.majorVersions.map(major => (
+            <div
+              key={major.key}
+              className="major-item"
+              onMouseEnter={() => setHoveredMajor(major.key)}
+              onMouseLeave={() => setHoveredMajor(null)}
+            >
+              <div className={`major-label ${major.minorVersions.length === 1 ? 'single' : ''}`}>
+                {major.minorVersions.length === 1 ? (
+                  <button
+                    className="single-version-button"
+                    onClick={() => handleMinorClick(major.minorVersions[0])}
+                  >
+                    {major.label || major.key}
+                  </button>
+                ) : (
+                  <>
+                    <svg
+                      className="arrow arrow-left"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7.5 3L4.5 6L7.5 9"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span>{major.label || major.key}</span>
+                  </>
+                )}
+              </div>
+
+              {hoveredMajor === major.key && major.minorVersions.length > 1 && (
+                <div className="flyout">
+                  {major.minorVersions.map(minor => (
+                    <button
+                      key={minor.key}
+                      className={`minor-item ${minor.key === activeMinor.key ? 'active' : ''}`}
+                      onClick={() => handleMinorClick(minor)}
+                    >
+                      {minor.label || minor.key}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      </label>
+      )}
+
       <style jsx>{`
         .version-selector {
-          display: inline-flex;
-          align-items: center;
-          margin-left: auto;
+          position: relative;
+          display: inline-block;
         }
-        label {
+
+        .version-button {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-        }
-        .selector-group {
-          display: flex;
-          gap: 0.25rem;
-        }
-        select {
+          padding: 0.5rem 0.75rem;
           font-size: 0.9rem;
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
           border: 1px solid var(--border-color);
+          border-radius: 6px;
           background: white;
           cursor: pointer;
+          transition: border-color 0.2s;
         }
-        .major-select {
+
+        .version-button:hover {
+          border-color: #999;
+        }
+
+        .version-button span {
+          white-space: nowrap;
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: calc(100% + 4px);
+          right: 0;
+          min-width: 200px;
+          background: white;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          overflow: visible;
+        }
+
+        .major-item {
+          position: relative;
+        }
+
+        .major-label {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          cursor: default;
+          transition: background-color 0.2s;
+        }
+
+        .major-item:hover .major-label {
+          background-color: #f5f5f5;
+        }
+
+        .major-label.single {
+          padding: 0;
+        }
+
+        .major-label span {
+          font-size: 0.9rem;
+        }
+
+        .flyout {
+          position: absolute;
+          right: 100%;
+          top: 0;
+          min-width: 150px;
+          background: white;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          margin-right: 2px;
+          z-index: 1001;
+        }
+      `}</style>
+      <style jsx global>{`
+        .version-selector .chevron {
+          transition: transform 0.2s;
+        }
+
+        .version-selector .chevron.open {
+          transform: rotate(180deg);
+        }
+
+        .version-selector .single-version-button {
+          display: flex;
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          border: none;
+          background: none;
+          text-align: left;
+          cursor: pointer;
+          font-size: 0.9rem;
+          font-family: inherit;
+          color: inherit;
+          transition: background-color 0.2s;
+        }
+
+        .version-selector .single-version-button:hover {
+          background-color: #f5f5f5;
+        }
+
+        .version-selector .arrow {
+          flex-shrink: 0;
+        }
+
+        .version-selector .arrow-left {
+          margin-right: 0.25rem;
+        }
+
+        .version-selector .minor-item {
+          display: block;
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          border: none;
+          background: none;
+          text-align: left;
+          cursor: pointer;
+          font-size: 0.9rem;
+          font-family: inherit;
+          color: inherit;
+          transition: background-color 0.2s;
+          white-space: nowrap;
+        }
+
+        .version-selector .minor-item:hover {
+          background-color: #f5f5f5;
+        }
+
+        .version-selector .minor-item.active {
+          background-color: #e8f4f8;
           font-weight: 600;
         }
-        .minor-select {
-          min-width: 100px;
+
+        .version-selector .minor-item:first-child {
+          border-radius: 6px 6px 0 0;
         }
-        select:hover {
-          border-color: #999;
+
+        .version-selector .minor-item:last-child {
+          border-radius: 0 0 6px 6px;
         }
       `}</style>
     </div>
