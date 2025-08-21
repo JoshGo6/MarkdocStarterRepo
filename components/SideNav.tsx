@@ -67,11 +67,6 @@ function NavList({
                   onClick={hasChildren ? () => onToggleExpand(itemKey) : undefined}
                 >
                   {item.label}
-                  {hasChildren && (
-                    <span className="expand-icon">
-                      {isExpanded ? '−' : '+'}
-                    </span>
-                  )}
                 </span>
               )}
             </div>
@@ -101,11 +96,14 @@ function NavList({
           flex: 1;
           display: flex;
           align-items: center;
-          justify-content: space-between;
         }
         .nolink.expandable {
           cursor: pointer;
           user-select: none;
+          font-weight: 500;
+          font-size: 0.95em;
+          letter-spacing: 0.01em;
+          opacity: 0.9;
         }
         .nolink.expandable:hover {
           opacity: 1;
@@ -114,17 +112,11 @@ function NavList({
           padding: 2px 4px;
           margin: -2px -4px;
         }
-        .expand-icon {
-          font-family: monospace;
-          font-weight: bold;
-          margin-left: 8px;
-          font-size: 14px;
-          width: 16px;
-          text-align: center;
-        }
         .nav-link {
           text-decoration: none;
           color: inherit;
+          font-weight: 400;
+          font-size: 0.9em;
         }
         .nav-link:hover {
           opacity: 0.7;
@@ -133,7 +125,8 @@ function NavList({
           font-weight: 600;
         }
         li.expanded > .nav-item > .nolink {
-          font-weight: 600;
+          font-weight: 500;
+          opacity: 1;
         }
         li > ul {
           margin-left: 1rem;
