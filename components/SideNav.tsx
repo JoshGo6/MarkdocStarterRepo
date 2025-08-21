@@ -67,6 +67,11 @@ function NavList({
                   onClick={hasChildren ? () => onToggleExpand(itemKey) : undefined}
                 >
                   {item.label}
+                  {hasChildren && (
+                    <span className={`expand-caret ${isExpanded ? 'expanded' : ''}`}>
+                      ▶
+                    </span>
+                  )}
                 </span>
               )}
             </div>
@@ -96,6 +101,7 @@ function NavList({
           flex: 1;
           display: flex;
           align-items: center;
+          justify-content: space-between;
         }
         .nolink.expandable {
           cursor: pointer;
@@ -112,17 +118,29 @@ function NavList({
           padding: 2px 4px;
           margin: -2px -4px;
         }
+        .expand-caret {
+          font-size: 10px;
+          margin-left: 8px;
+          transition: transform 0.2s ease;
+          color: rgba(0, 0, 0, 0.6);
+          width: 12px;
+          text-align: center;
+        }
+        .expand-caret.expanded {
+          transform: rotate(90deg);
+        }
         .nav-link {
           text-decoration: none;
-          color: inherit;
+          color: rgba(0, 0, 0, 0.7);
           font-weight: 400;
           font-size: 0.9em;
         }
         .nav-link:hover {
-          opacity: 0.7;
+          color: rgba(0, 0, 0, 0.9);
         }
         li.active > .nav-item > :global(.nav-link) {
           font-weight: 600;
+          color: rgba(0, 0, 0, 0.95);
         }
         li.expanded > .nav-item > .nolink {
           font-weight: 500;
