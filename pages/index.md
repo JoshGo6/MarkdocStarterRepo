@@ -1,1 +1,1 @@
-v1.0/index.md
+You’re viewing the docs for {% activeVersion / %}, which is supplied by a variable, `activeVersion`.
