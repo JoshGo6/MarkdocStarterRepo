@@ -26,6 +26,10 @@
       {
         "label": "Migrate from v2",
         "path": "/guides/migrate"
+      },
+      {
+        "label": "Conditional formatting",
+        "path": "/index.md"
       }
     ]
   }

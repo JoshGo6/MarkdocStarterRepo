@@ -30,6 +30,10 @@
       {
         "label": "Neural Networks",
         "path": "/experimental/neural"
+      },
+      {
+        "label": "Conditional formatting",
+        "path": "/index.md"
       }
     ]
   },
