@@ -54,16 +54,16 @@
       "label": "Version 3.x",
       "minorVersions": [
         {
-          "key": "v3.0",
-          "label": "3.0 (Preview)",
-          "docsRoot": "/v3.0",
-          "sidenav": "nav/v3.0/sidenav.json"
-        },
-        {
           "key": "v3.1",
           "label": "3.1 (Alpha)",
           "docsRoot": "/v3.0",
           "sidenav": "nav/v3.1/sidenav.json"
+        },
+        {
+          "key": "v3.0",
+          "label": "3.0 (Preview)",
+          "docsRoot": "/v3.0",
+          "sidenav": "nav/v3.0/sidenav.json"
         },
         {
           "key": "v3.2",
