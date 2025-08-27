@@ -13,9 +13,27 @@ type MinorVersion = { key: string; label?: string; docsRoot: string; sidenav: st
 type MajorVersion = { key: string; label?: string; minorVersions: MinorVersion[] };
 type VersionsConfig = { default: string; majorVersions: MajorVersion[] };
 
-function findActiveVersion(pathname: string, cfg: VersionsConfig): MinorVersion {
-  const p = (pathname || '').split(/[?#]/)[0];
+function findActiveVersion(asPath: string, cfg: VersionsConfig): MinorVersion {
+  const [pathname, search] = (asPath || '').split(/[?#]/);
+  const searchParams = new URLSearchParams(search || '');
+  const versionParam = searchParams.get('v');
   
+  // If there's a version parameter, try to find it first
+  if (versionParam) {
+    for (const major of cfg.majorVersions) {
+      const versionMatch = major.minorVersions.find(v => v.key === versionParam);
+      if (versionMatch) {
+        // Verify this version's docsRoot matches the current path
+        const p = pathname || '';
+        if (p === versionMatch.docsRoot || p.startsWith(versionMatch.docsRoot + '/')) {
+          return versionMatch;
+        }
+      }
+    }
+  }
+  
+  // Fallback to path-based matching
+  const p = pathname || '';
   for (const major of cfg.majorVersions) {
     for (const minor of major.minorVersions) {
       if (p === minor.docsRoot || p.startsWith(minor.docsRoot + '/')) {
@@ -159,11 +177,28 @@ export function SideNav() {
   const cfg = versionsConfig as VersionsConfig;
   const [items, setItems] = useState<NavItem[] | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-
-  const activeVersion = useMemo(() => findActiveVersion(router.asPath, cfg), [router.asPath]);
+  const [activeVersion, setActiveVersion] = useState<MinorVersion | null>(null);
+  
+  useEffect(() => {
+    // Only detect version after router is ready (client-side)
+    if (router.isReady) {
+      const detectedVersion = findActiveVersion(router.asPath, cfg);
+      setActiveVersion(detectedVersion);
+    }
+  }, [router.isReady, router.asPath]);
+  
+  // Fallback for SSG - use path-only detection until client-side hydration
+  useEffect(() => {
+    if (!activeVersion) {
+      const fallbackVersion = findActiveVersion(router.asPath.split('?')[0], cfg);
+      setActiveVersion(fallbackVersion);
+    }
+  }, []);
 
   useEffect(() => {
     async function load() {
+      if (!activeVersion) return;
+      
       try {
         const res = await fetch(`/api/nav/${activeVersion.key}`);
         if (!res.ok) throw new Error('Failed to load nav');
@@ -177,7 +212,7 @@ export function SideNav() {
       }
     }
     load();
-  }, [activeVersion.key]);
+  }, [activeVersion?.key]);
 
   const handleToggleExpand = (key: string) => {
     setExpandedItems(prev => {

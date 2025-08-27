@@ -12,7 +12,7 @@ function ensureLeadingSlash(p: string): string {
   return p.startsWith('/') ? p : '/' + p;
 }
 
-function normalizeNav(items: NavItem[], docsRoot: string): NavItem[] {
+function normalizeNav(items: NavItem[], docsRoot: string, versionKey: string): NavItem[] {
   const root = ensureLeadingSlash(docsRoot).replace(/\/$/, '');
 
   const toAbsolute = (maybeRel?: string): string | undefined => {
@@ -29,13 +29,37 @@ function normalizeNav(items: NavItem[], docsRoot: string): NavItem[] {
   };
 
   const walk = (arr: NavItem[]): NavItem[] =>
-    arr.map(({ label, path: p, children }) => ({
-      label,
+    arr.map(({ label, path: p, children, ...rest }) => ({
+      label: processVersionLabel(label, versionKey),
       path: toAbsolute(p),
       children: children ? walk(children) : undefined,
+      ...rest
     }));
 
   return walk(items);
+}
+
+function processVersionLabel(label: string, versionKey: string): string {
+  // Apply version-specific transformations to labels
+  // This allows the same sidenav file to render differently for different versions
+  
+  // Example: Transform generic labels to version-specific ones
+  if (label === "Home v3.0 Preview" && versionKey === "v3.1") {
+    return "Home v3.1 Alpha";
+  }
+  
+  if (label === "Preview Features" && versionKey === "v3.1") {
+    return "Alpha Features";
+  }
+  
+  if (label === "Guides v3.0" && versionKey === "v3.1") {
+    return "Experimental v3.1";
+  }
+  
+  // You can add more transformations here or implement a more sophisticated system
+  // such as reading from a version-specific mapping file
+  
+  return label;
 }
 
 function findVersion(key: string, cfg: VersionsConfig): MinorVersion | undefined {
@@ -67,7 +91,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const raw = fs.readFileSync(filePath, 'utf-8');
     const json = JSON.parse(raw) as NavItem[];
-    const normalized = normalizeNav(json, v.docsRoot);
+    const normalized = normalizeNav(json, v.docsRoot, v.key);
     res.status(200).json(normalized);
   } catch (e: any) {
     res.status(500).json({ error: e?.message || 'Failed to load nav file' });

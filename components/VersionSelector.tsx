@@ -6,9 +6,27 @@ type MinorVersion = { key: string; label?: string; docsRoot: string; sidenav: st
 type MajorVersion = { key: string; label?: string; minorVersions: MinorVersion[] };
 type VersionsConfig = { default: string; majorVersions: MajorVersion[] };
 
-function findActiveVersion(pathname: string, cfg: VersionsConfig): MinorVersion {
-  const p = (pathname || '').split(/[?#]/)[0];
+function findActiveVersion(asPath: string, cfg: VersionsConfig): MinorVersion {
+  const [pathname, search] = (asPath || '').split(/[?#]/);
+  const searchParams = new URLSearchParams(search || '');
+  const versionParam = searchParams.get('v');
   
+  // If there's a version parameter, try to find it first
+  if (versionParam) {
+    for (const major of cfg.majorVersions) {
+      const versionMatch = major.minorVersions.find(v => v.key === versionParam);
+      if (versionMatch) {
+        // Verify this version's docsRoot matches the current path
+        const p = pathname || '';
+        if (p === versionMatch.docsRoot || p.startsWith(versionMatch.docsRoot + '/')) {
+          return versionMatch;
+        }
+      }
+    }
+  }
+  
+  // Fallback to path-based matching
+  const p = pathname || '';
   for (const major of cfg.majorVersions) {
     for (const minor of major.minorVersions) {
       if (p === minor.docsRoot || p.startsWith(minor.docsRoot + '/')) {
@@ -65,8 +83,26 @@ async function fetchNavPaths(versionKey: string): Promise<Set<string>> {
 export function VersionSelector() {
   const router = useRouter();
   const cfg = versionsConfig as VersionsConfig;
-  const activeMinor = useMemo(() => findActiveVersion(router.asPath, cfg), [router.asPath]);
-  const activeMajor = useMemo(() => findMajorVersion(activeMinor, cfg), [activeMinor]);
+  const [activeMinor, setActiveMinor] = useState<MinorVersion | null>(null);
+  const [activeMajor, setActiveMajor] = useState<MajorVersion | null>(null);
+  
+  useEffect(() => {
+    // Only detect version after router is ready (client-side)
+    if (router.isReady) {
+      const detectedVersion = findActiveVersion(router.asPath, cfg);
+      setActiveMinor(detectedVersion);
+      setActiveMajor(findMajorVersion(detectedVersion, cfg) || null);
+    }
+  }, [router.isReady, router.asPath]);
+  
+  // Fallback for SSG - use path-only detection until client-side hydration
+  useEffect(() => {
+    if (!activeMinor) {
+      const fallbackVersion = findActiveVersion(router.asPath.split('?')[0], cfg);
+      setActiveMinor(fallbackVersion);
+      setActiveMajor(findMajorVersion(fallbackVersion, cfg) || null);
+    }
+  }, []);
   
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredMajor, setHoveredMajor] = useState<string | null>(null);
@@ -85,16 +121,21 @@ export function VersionSelector() {
   }, []);
 
   const handleMinorClick = async (minor: MinorVersion) => {
+    if (!activeMinor) return;
+    
     const currentPath = (router.asPath || '').split(/[?#]/)[0];
     const candidate = switchPath(currentPath, activeMinor.docsRoot, minor.docsRoot);
     const paths = await fetchNavPaths(minor.key);
     const target = paths.has(candidate) ? candidate : minor.docsRoot;
-    router.push(target);
+    
+    // Add version parameter to URL to track selection when docsRoot folders are shared
+    const targetWithVersion = `${target}?v=${minor.key}`;
+    router.push(targetWithVersion);
     setIsOpen(false);
     setHoveredMajor(null);
   };
 
-  const currentVersionLabel = activeMinor.label || activeMinor.key;
+  const currentVersionLabel = activeMinor?.label || activeMinor?.key || 'Loading...';
 
   return (
     <div className="version-selector" ref={dropdownRef}>
@@ -168,7 +209,7 @@ export function VersionSelector() {
                   {major.minorVersions.map(minor => (
                     <button
                       key={minor.key}
-                      className={`minor-item ${minor.key === activeMinor.key ? 'active' : ''}`}
+                      className={`minor-item ${minor.key === activeMinor?.key ? 'active' : ''}`}
                       onClick={() => handleMinorClick(minor)}
                     >
                       {minor.label || minor.key}
