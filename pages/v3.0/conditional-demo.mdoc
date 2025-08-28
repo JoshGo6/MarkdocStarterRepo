@@ -1,0 +1,30 @@
+---
+title: Conditional Demo (Shared by v3.0 and v3.1)
+description: Shows how a shared page can vary by selected version.
+---
+
+# Same source page, different left navs
+
+This page lives once on disk but can present different content depending on the **selected version**.
+
+{% version is="v3.0" %}
+## You selected v3.0.  
+This block is only visible when the active minor is exactly `v3.0`.
+{% /version %}
+
+{% version is="v3.1" %}
+## You selected v3.1.  
+This block is only visible when the active minor is exactly `v3.1`.
+{% /version %}
+
+{% version any=["v3.0","v3.1"] %}
+**Common to v3.0 and v3.1.**  
+This block renders for both `v3.0` and `v3.1`.
+{% /version %}
+
+{% version major="v3" not=["v3.0"] %}
+**All v3.x except v3.0.**  
+Handy if you need an “all v3 except one” pattern.
+{% /version %}
+
+Try switching versions — this content updates immediately.

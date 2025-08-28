@@ -32,5 +32,9 @@
         "path": "/index.md"
       }
     ]
+  },
+  {
+    "label": "Conditional Demo",
+    "path": "/conditional-demo"
   }
 ]
